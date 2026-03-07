@@ -89,4 +89,37 @@ public class Graph {
         }
     }
 
+    // FEATURE 3
+    public void addEdge(String srcLabel, String dstLabel) {
+        // IMPLEMENTED
+
+        MutableNode srcNode = null;
+        MutableNode dstNode = null;
+
+        for (MutableNode node : this.g.nodes()) {
+            if (node.name().toString().equals(srcLabel)) {
+                srcNode = node;
+            }
+
+            if (node.name().toString().equals(dstLabel)) {
+                dstNode = node;
+            }
+        }
+
+        if (srcNode == null || dstNode == null) {
+            System.out.println("Could not find source or destination node");
+            return;
+        }
+
+        for (var link : srcNode.links()) {
+            if (link.to().name().toString().equals(dstLabel)) {
+                System.out.println("Requested edge already exists: " + srcLabel + " -> " + dstLabel);
+                return;
+            }
+        }
+
+        srcNode.addLink(dstNode);
+    }
+
+
 }

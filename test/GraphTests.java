@@ -86,4 +86,52 @@ public class GraphTests {
         Assert.assertEquals(expected.trim(), output.trim());
 
     }
+
+    @Test
+    public void testAddEdge() throws Exception {
+        // Arrange
+        test_graph.parseGraph("test/resources/addEdge1.dot");
+
+        test_graph.addEdge("A", "B");
+
+        String output = test_graph.toString();
+
+        String expected = Files.readString(Paths.get("test/resources/addEdgeExpected.txt"));
+
+        Assert.assertEquals(expected.trim(), output.trim());
+
+    }
+
+    @Test
+    public void testDuplicateEdge() throws Exception {
+        // Arrange
+        test_graph.parseGraph("test/resources/addEdge1.dot");
+
+        // Act
+        test_graph.addEdge("A", "B");
+        test_graph.addEdge("A", "B");
+
+        // Assert
+        String output = test_graph.toString();
+
+        Assert.assertTrue(output.contains("Number of Edges: 1"));
+    }
+
+    @Test
+    public void testAddToMissingNode() throws Exception {
+        // Arrange
+        test_graph.parseGraph("test/resources/addEdge1.dot");
+
+        // Act
+        test_graph.addEdge("A", "C"); // C is not present in the input
+
+        // Assert
+        String output = test_graph.toString();
+
+        Assert.assertTrue(output.contains("Number of Edges: 0"));
+
+    }
+
+
+
 }

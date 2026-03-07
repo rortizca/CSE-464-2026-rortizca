@@ -1,0 +1,7 @@
+Number of nodes: 2
+Nodes:
+B
+A
+Edges:
+A -> B
+Number of Edges: 1
