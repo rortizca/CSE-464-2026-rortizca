@@ -68,4 +68,25 @@ public class Graph {
         }
 
     }
+
+    // FEATURE 2
+    public void addNode(String label) {
+        for (MutableNode node : this.g.nodes()) {
+            if (node.name().toString().equals(label)) {
+                System.out.println("Duplicate Node Found: " + label);
+                return;
+            }
+
+        }
+
+        this.g.add(mutNode(label));
+    }
+
+    public void addNodes(String[] labels) {
+
+        for (String label : labels) {
+            addNode(label);
+        }
+    }
+
 }
