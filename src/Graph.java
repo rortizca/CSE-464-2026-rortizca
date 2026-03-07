@@ -121,5 +121,36 @@ public class Graph {
         srcNode.addLink(dstNode);
     }
 
+    // FEATURE 4
+    public void outputDotGraph(String path) {
+        // IMPLEMENTED
+        try (FileWriter writer = new FileWriter(path)) {
+            writer.write(this.g.toString());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void outputGraphics(String path, String format) {
+        // Implemented
+        try {
+
+            Format fmt;
+
+            if (format.equalsIgnoreCase("png")) {
+                fmt = Format.PNG;
+            } else {
+                throw new IllegalArgumentException("Unsupported format");
+            }
+
+            Graphviz.fromGraph(this.g)
+                    .render(fmt)
+                    .toFile(new File(path));
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 
 }

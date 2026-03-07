@@ -1,9 +1,13 @@
+import guru.nidi.graphviz.engine.Format;
+import guru.nidi.graphviz.engine.Graphviz;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
@@ -132,6 +136,40 @@ public class GraphTests {
 
     }
 
+    @Test
+    public void testOutputDOTGraph() throws Exception {
+        // Arrange
+        test_graph.parseGraph("test/resources/outputDOTinput1.dot");
+
+        // Act
+        String outputPath = "test/resources/output_test.dot";
+
+        test_graph.outputDotGraph(outputPath);
+
+        File file = new File(outputPath);
+
+        // Assert
+        Assert.assertTrue(file.exists());
+        Assert.assertTrue(file.length() > 0);
+    }
+
+    @Test
+    public void testOutputGraphics() throws Exception {
+        // Arrange
+        test_graph.parseGraph("test/resources/outputDotinput1.dot");
+
+        // Act
+        String outputPath = "test/resources/output_test.dot";
+
+        test_graph.outputGraphics(outputPath, "png");
+
+        File file = new File(outputPath);
+
+        // Assert
+        Assert.assertTrue(file.exists());
+        Assert.assertTrue(file.length() > 0);
+
+    }
 
 
 }
