@@ -1,0 +1,10 @@
+Number of nodes: 3
+Nodes:
+A
+C
+B
+Edges:
+A -> B
+C -> A
+B -> C
+Number of Edges: 3
