@@ -7,6 +7,7 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="CSE-464-2026-rortizca" />
+        <module name="my-project" />
         <module name="Graph_Parser" />
       </profile>
     </annotationProcessing>
