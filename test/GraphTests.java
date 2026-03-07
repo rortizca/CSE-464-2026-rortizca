@@ -159,7 +159,7 @@ public class GraphTests {
         test_graph.parseGraph("test/resources/outputDotinput1.dot");
 
         // Act
-        String outputPath = "test/resources/output_test.dot";
+        String outputPath = "test/resources/output_test.png";
 
         test_graph.outputGraphics(outputPath, "png");
 
