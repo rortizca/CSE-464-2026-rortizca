@@ -14,7 +14,7 @@ public class Graph {
     MutableGraph g;
 
     public Graph() {
-        this.g = null;
+        this.g = mutGraph("graph").setDirected(true);
     }
 
     // FEATURE 1
@@ -150,6 +150,94 @@ public class Graph {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public MutableNode findNode(String label) {
+        for (MutableNode node : this.g.nodes()) {
+            if (node.name().toString().equals(label)) {
+                return node;
+            }
+        }
+        return null;
+    }
+
+    private MutableNode findNode(MutableGraph graph, String label) {
+        for (MutableNode node : graph.nodes()) {
+            if (node.name().toString().equals(label)) {
+                return node;
+            }
+        }
+        return null;
+    }
+
+    public void removeNode(String label) {
+        MutableNode delNode = findNode(label);
+
+        if (delNode == null) {
+            throw new IllegalArgumentException(
+                    "Chosen Node not found"
+            );
+        }
+
+        MutableGraph editedGraph = mutGraph("graph").setDirected(true);
+
+        // Add edges from current graph except specified label;
+        for (MutableNode node : this.g.nodes()) {
+            if (!node.name().toString().equals(label)) {
+                editedGraph.add(mutNode(node.name().toString()));
+            }
+        }
+
+        // Reproduce edges in edited graph
+        for (MutableNode node : this.g.nodes()) {
+            if (node.name().toString().equals(label)) continue;
+
+            MutableNode srcNode = findNode(editedGraph, node.name().toString());
+
+            node.links().forEach(link -> {
+                String dstNode = link.to().name().toString();
+
+                if (!dstNode.equals(label)) {
+                    MutableNode newDstNode =
+                            findNode(editedGraph, dstNode);
+
+                    if (newDstNode != null) {
+                        srcNode.addLink(newDstNode);
+                    }
+                }
+            });
+        }
+
+        this.g = editedGraph;
+
+
+    }
+
+    public void removeNodes(String[] labels) {
+        for (String label : labels) {
+            removeNode(label);
+        }
+    }
+
+    public void removeEdge(String srcLabel, String dstLabel) {
+        MutableNode src = findNode(srcLabel);
+        MutableNode dst = findNode(dstLabel);
+
+        if (src == null || dst == null) {
+            throw new IllegalArgumentException(
+                    "Source or destination node not found"
+            );
+        }
+
+        boolean removed = src.links().removeIf(link ->
+                link.to().name().toString().equals(dstLabel));
+
+        if (!removed) {
+            throw new IllegalArgumentException(
+                    "Edge could not be found: " + srcLabel + " -> " + dstLabel
+            );
+        }
+
     }
 
 
