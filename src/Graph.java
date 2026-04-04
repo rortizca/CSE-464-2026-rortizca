@@ -14,6 +14,13 @@ import java.util.*;
 public class Graph {
     MutableGraph g;
 
+    public enum Algorithm {
+        BFS,
+        DFS
+    }
+
+    private Algorithm algo = Algorithm.BFS;
+
     public class Path {
         MutableNode[] path;
 
@@ -258,15 +265,15 @@ public class Graph {
             return new Path(new MutableNode[]{src});
         }
 
-        Queue<MutableNode> queue = new LinkedList<>();
+        Stack<MutableNode> stack = new Stack<>();
         Set<MutableNode> visited = new HashSet<>();
         Map<MutableNode, MutableNode> parent = new HashMap<>();
 
-        queue.add(src);
+        stack.push(src);
         visited.add(src);
 
-        while (!queue.isEmpty()) {
-            MutableNode current = queue.poll();
+        while (!stack.isEmpty()) {
+            MutableNode current = stack.pop();
 
             if (current.equals(dst)) {
                 break;
@@ -279,12 +286,12 @@ public class Graph {
                 if (neighbor != null && !visited.contains(neighbor)) {
                     visited.add(neighbor);
                     parent.put(neighbor, current);
-                    queue.add(neighbor);
+                    stack.push(neighbor);
                 }
              });
         }
 
-        if (!parent.containsKey(dst))
+        if (!visited.contains(dst))
             return new Path(new MutableNode[0]);
 
         List<MutableNode> reversePath = new ArrayList<>();
