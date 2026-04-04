@@ -256,7 +256,7 @@ public class Graph {
 
     }
 
-    public Path GraphSearch(MutableNode src, MutableNode dst) {
+    public Path GraphSearch(MutableNode src, MutableNode dst, Algorithm algo) {
         if (src == null || dst == null) {
             throw new IllegalArgumentException("One or two nodes are null");
         }
@@ -265,49 +265,108 @@ public class Graph {
             return new Path(new MutableNode[]{src});
         }
 
-        Stack<MutableNode> stack = new Stack<>();
-        Set<MutableNode> visited = new HashSet<>();
-        Map<MutableNode, MutableNode> parent = new HashMap<>();
+        if (algo == Algorithm.DFS) {
+            Stack<MutableNode> stack = new Stack<>();
+            Set<MutableNode> visited = new HashSet<>();
+            Map<MutableNode, MutableNode> parent = new HashMap<>();
 
-        stack.push(src);
-        visited.add(src);
+            stack.push(src);
+            visited.add(src);
 
-        while (!stack.isEmpty()) {
-            MutableNode current = stack.pop();
+            while (!stack.isEmpty()) {
+                MutableNode current = stack.pop();
 
-            if (current.equals(dst)) {
-                break;
+                if (current.equals(dst)) {
+                    break;
+                }
+
+                current.links().forEach(link -> {
+                    String neighborLabel = link.to().name().toString();
+                    MutableNode neighbor = findNode(neighborLabel);
+
+                    if (neighbor != null && !visited.contains(neighbor)) {
+                        visited.add(neighbor);
+                        parent.put(neighbor, current);
+                        stack.push(neighbor);
+                    }
+                });
             }
 
-            current.links().forEach(link -> {
-                String neighborLabel = link.to().name().toString();
-                MutableNode neighbor = findNode(neighborLabel);
+            if (!visited.contains(dst))
+                return new Path(new MutableNode[0]);
 
-                if (neighbor != null && !visited.contains(neighbor)) {
-                    visited.add(neighbor);
-                    parent.put(neighbor, current);
-                    stack.push(neighbor);
+            List<MutableNode> reversePath = new ArrayList<>();
+
+            MutableNode step = dst;
+            while (step != null) {
+                reversePath.add(step);
+                step = parent.get(step);
+            }
+
+            Collections.reverse(reversePath);
+
+            return new Path(
+                    reversePath.toArray(new MutableNode[0])
+            );
+        } else if (algo == Algorithm.BFS) {
+
+
+            Queue<MutableNode> queue = new LinkedList<>();
+            Set<MutableNode> visited = new HashSet<>();
+            Map<MutableNode, MutableNode> parent = new HashMap<>();
+
+
+            queue.add(src);
+            visited.add(src);
+
+
+            while (!queue.isEmpty()) {
+                MutableNode current = queue.poll();
+
+
+                if (current.equals(dst)) {
+                    break;
                 }
-             });
+
+
+                current.links().forEach(link -> {
+                    String neighborLabel = link.to().name().toString();
+                    MutableNode neighbor = findNode(neighborLabel);
+
+
+                    if (neighbor != null && !visited.contains(neighbor)) {
+                        visited.add(neighbor);
+                        parent.put(neighbor, current);
+                        queue.add(neighbor);
+                    }
+                });
+            }
+
+
+            if (!parent.containsKey(dst))
+                return new Path(new MutableNode[0]);
+
+
+            List<MutableNode> reversePath = new ArrayList<>();
+
+
+            MutableNode step = dst;
+            while (step != null) {
+                reversePath.add(step);
+                step = parent.get(step);
+            }
+
+
+            Collections.reverse(reversePath);
+
+
+            return new Path(
+                    reversePath.toArray(new MutableNode[0])
+            );
+
+
         }
-
-        if (!visited.contains(dst))
-            return new Path(new MutableNode[0]);
-
-        List<MutableNode> reversePath = new ArrayList<>();
-
-        MutableNode step = dst;
-        while (step != null) {
-            reversePath.add(step);
-            step = parent.get(step);
-        }
-
-        Collections.reverse(reversePath);
-
-        return new Path(
-            reversePath.toArray(new MutableNode[0])
-        );
-
+        return null;
     }
 
 
