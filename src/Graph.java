@@ -9,9 +9,18 @@ import static guru.nidi.graphviz.model.Factory.*;
 import java.io.IOException;
 import java.io.FileWriter;
 import java.io.File;
+import java.util.*;
 
 public class Graph {
     MutableGraph g;
+
+    public class Path {
+        MutableNode[] path;
+
+        public Path(MutableNode[] nodes) {
+            this.path = nodes;
+        }
+    }
 
     public Graph() {
         this.g = mutGraph("graph").setDirected(true);
@@ -237,6 +246,60 @@ public class Graph {
                     "Edge could not be found: " + srcLabel + " -> " + dstLabel
             );
         }
+
+    }
+
+    public Path GraphSearch(MutableNode src, MutableNode dst) {
+        if (src == null || dst == null) {
+            throw new IllegalArgumentException("One or two nodes are null");
+        }
+
+        if (src.equals(dst)) {
+            return new Path(new MutableNode[]{src});
+        }
+
+        Queue<MutableNode> queue = new LinkedList<>();
+        Set<MutableNode> visited = new HashSet<>();
+        Map<MutableNode, MutableNode> parent = new HashMap<>();
+
+        queue.add(src);
+        visited.add(src);
+
+        while (!queue.isEmpty()) {
+            MutableNode current = queue.poll();
+
+            if (current.equals(dst)) {
+                break;
+            }
+
+            current.links().forEach(link -> {
+                String neighborLabel = link.to().name().toString();
+                MutableNode neighbor = findNode(neighborLabel);
+
+                if (neighbor != null && !visited.contains(neighbor)) {
+                    visited.add(neighbor);
+                    parent.put(neighbor, current);
+                    queue.add(neighbor);
+                }
+             });
+        }
+
+        if (!parent.containsKey(dst))
+            return new Path(new MutableNode[0]);
+
+        List<MutableNode> reversePath = new ArrayList<>();
+
+        MutableNode step = dst;
+        while (step != null) {
+            reversePath.add(step);
+            step = parent.get(step);
+        }
+
+        Collections.reverse(reversePath);
+
+        return new Path(
+            reversePath.toArray(new MutableNode[0])
+        );
 
     }
 
