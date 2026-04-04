@@ -159,7 +159,7 @@ public class GraphTests {
         test_graph.parseGraph("test/resources/outputDotinput1.dot");
 
         // Act
-        String outputPath = "test/resources/output_test.dot";
+        String outputPath = "test/resources/output_test.png";
 
         test_graph.outputGraphics(outputPath, "png");
 
@@ -169,6 +169,83 @@ public class GraphTests {
         Assert.assertTrue(file.exists());
         Assert.assertTrue(file.length() > 0);
 
+    }
+
+    @Test
+    public void testRemoveNode() throws Exception {
+        // Arrange
+        test_graph.parseGraph("test/resources/testRemoveGraph.dot");
+
+        // Act
+        test_graph.removeNode("B");
+
+        String output = test_graph.toString();
+
+        // System.out.println(output);
+        // Assert
+        Assert.assertFalse(output.contains("B"));
+    }
+
+    @Test
+    public void testRemoveNonexistentNode() throws Exception {
+        // Arrange
+        test_graph.parseGraph("test/resources/testRemoveGraph.dot");
+
+        // Act && Asset
+        Assert.assertThrows(IllegalArgumentException.class, () -> {
+            test_graph.removeNode("Z");
+        });
+    }
+
+    @Test
+    public void testRemoveNodes() throws Exception {
+        // Arrange
+        test_graph.parseGraph("test/resources/testRemoveGraph.dot");
+
+        // Act
+        test_graph.removeNodes(new String[]{"A", "C"});
+
+        String output = test_graph.toString();
+
+        // Assert
+        Assert.assertFalse(output.contains("A"));
+        Assert.assertFalse(output.contains("C"));
+    }
+
+    @Test
+    public void testRemoveNonexistentNodes() throws Exception {
+        // Arrange
+        test_graph.parseGraph("test/resources/testRemoveGraph.dot");
+
+        // Act && Asset
+        Assert.assertThrows(IllegalArgumentException.class, () -> {
+            test_graph.removeNodes(new String[]{"A","Z"});
+        });
+    }
+
+    @Test
+    public void testRemoveEdge() throws Exception {
+        // Arrange
+        test_graph.parseGraph("test/resources/testRemoveGraph.dot");
+
+        // Act
+        test_graph.removeEdge("A", "B");
+
+        String output = test_graph.toString();
+
+        // Assert
+        Assert.assertFalse(output.contains("A -> B"));
+    }
+
+    @Test
+    public void testRemoveNonexistentEdge() throws Exception {
+        // Arrange
+        test_graph.parseGraph("test/resources/testRemoveGraph.dot");
+
+        // Act && Asset
+        Assert.assertThrows(IllegalArgumentException.class, () -> {
+            test_graph.removeEdge("A", "C");
+        });
     }
 
 
