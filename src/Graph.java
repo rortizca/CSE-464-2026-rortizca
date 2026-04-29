@@ -16,7 +16,8 @@ public class Graph {
 
     public enum Algorithm {
         BFS,
-        DFS
+        DFS,
+        RANDOM
     }
 
     private Algorithm algo = Algorithm.BFS;
@@ -42,6 +43,21 @@ public class Graph {
 
             throw new RuntimeException(e);
         }
+    }
+
+    // Helper function to print visit history
+    private void printVisitHistory(List<MutableNode> path) {
+        StringBuilder s = new StringBuilder();
+
+        for (int i = 0; i < path.size(); i++) {
+            if (i > 0) {
+                s.append("-");
+            }
+
+            s.append(path.get(i).name());
+        }
+
+        System.out.println("Visit Node History: " + s.toString());
     }
 
     public String toString() {
@@ -262,112 +278,164 @@ public class Graph {
         }
 
         if (src.equals(dst)) {
+            System.out.println("Visit Node History: " + src.name());
+            System.out.println("Found target node: " + src.name());
             return new Path(new MutableNode[]{src});
         }
 
-        if (algo == Algorithm.DFS) {
-            Stack<MutableNode> stack = new Stack<>();
-            Set<MutableNode> visited = new HashSet<>();
-            Map<MutableNode, MutableNode> parent = new HashMap<>();
-
-            stack.push(src);
-            visited.add(src);
-
-            while (!stack.isEmpty()) {
-                MutableNode current = stack.pop();
-
-                if (current.equals(dst)) {
-                    break;
-                }
-
-                current.links().forEach(link -> {
-                    String neighborLabel = link.to().name().toString();
-                    MutableNode neighbor = findNode(neighborLabel);
-
-                    if (neighbor != null && !visited.contains(neighbor)) {
-                        visited.add(neighbor);
-                        parent.put(neighbor, current);
-                        stack.push(neighbor);
-                    }
-                });
-            }
-
-            if (!visited.contains(dst))
-                return new Path(new MutableNode[0]);
-
-            List<MutableNode> reversePath = new ArrayList<>();
-
-            MutableNode step = dst;
-            while (step != null) {
-                reversePath.add(step);
-                step = parent.get(step);
-            }
-
-            Collections.reverse(reversePath);
-
-            return new Path(
-                    reversePath.toArray(new MutableNode[0])
-            );
-        } else if (algo == Algorithm.BFS) {
-
-
-            Queue<MutableNode> queue = new LinkedList<>();
-            Set<MutableNode> visited = new HashSet<>();
-            Map<MutableNode, MutableNode> parent = new HashMap<>();
-
-
-            queue.add(src);
-            visited.add(src);
-
-
-            while (!queue.isEmpty()) {
-                MutableNode current = queue.poll();
-
-
-                if (current.equals(dst)) {
-                    break;
-                }
-
-
-                current.links().forEach(link -> {
-                    String neighborLabel = link.to().name().toString();
-                    MutableNode neighbor = findNode(neighborLabel);
-
-
-                    if (neighbor != null && !visited.contains(neighbor)) {
-                        visited.add(neighbor);
-                        parent.put(neighbor, current);
-                        queue.add(neighbor);
-                    }
-                });
-            }
-
-
-            if (!parent.containsKey(dst))
-                return new Path(new MutableNode[0]);
-
-
-            List<MutableNode> reversePath = new ArrayList<>();
-
-
-            MutableNode step = dst;
-            while (step != null) {
-                reversePath.add(step);
-                step = parent.get(step);
-            }
-
-
-            Collections.reverse(reversePath);
-
-
-            return new Path(
-                    reversePath.toArray(new MutableNode[0])
-            );
-
-
+        switch (algo) {
+            case BFS:
+                return bfsSearch(src, dst);
+            case DFS:
+                return dfsSearch(src, dst);
+            case RANDOM:
+                return randomWalk(src, dst);
+            default:
+                throw new IllegalArgumentException("Unknown algorithm");
         }
-        return null;
     }
 
+    // Helper Function to find sorted neighbors
+    private List<MutableNode> getSortedNeighbors(MutableNode node) {
+        List<MutableNode> neighbors = new ArrayList<>();
+
+        node.links().forEach(link -> {
+            MutableNode n = findNode(link.to().name().toString());
+            if (n != null) {
+                neighbors.add(n);
+            }
+        });
+
+        neighbors.sort(Comparator.comparing(n -> n.name().toString()));
+
+        return neighbors;
+    }
+
+    // DFS function
+    private Path dfsSearch(MutableNode src, MutableNode dst) {
+        Stack<MutableNode> stack = new Stack<>();
+        Set<MutableNode> visited = new HashSet<>();
+        Map<MutableNode, MutableNode> parent = new HashMap<>();
+
+        stack.push(src);
+        visited.add(src);
+
+        printVisitHistory(buildPath(src, parent));
+
+        while (!stack.isEmpty()) {
+            MutableNode current = stack.pop();
+
+            if (current.equals(dst)) {
+                System.out.println("Found target node: " + dst.name());
+                return new Path(buildPath(current, parent).toArray(new MutableNode[0]));
+            }
+
+            List<MutableNode> neighbors = getSortedNeighbors(current);
+
+            // reverse so stack processes alphabetically
+            Collections.reverse(neighbors);
+
+            for (MutableNode neighbor : neighbors) {
+                if (!visited.contains(neighbor)) {
+                    visited.add(neighbor);
+                    parent.put(neighbor, current);
+                    stack.push(neighbor);
+
+                    printVisitHistory(buildPath(neighbor, parent));
+                }
+            }
+        }
+
+        return new Path(new MutableNode[0]);
+    }
+
+    // BFS function
+    private Path bfsSearch(MutableNode src, MutableNode dst) {
+        Queue<MutableNode> queue = new LinkedList<>();
+        Set<MutableNode> visited = new HashSet<>();
+        Map<MutableNode, MutableNode> parent = new HashMap<>();
+
+        queue.add(src);
+        visited.add(src);
+
+        printVisitHistory(buildPath(src, parent));
+
+        while (!queue.isEmpty()) {
+            MutableNode current = queue.poll();
+
+            if (current.equals(dst)) {
+                System.out.println("Found target node: " + dst.name());
+                return new Path(buildPath(current, parent).toArray(new MutableNode[0]));
+            }
+
+            List<MutableNode> neighbors = getSortedNeighbors(current);
+
+            for (MutableNode neighbor : neighbors) {
+                if (!visited.contains(neighbor)) {
+                    visited.add(neighbor);
+                    parent.put(neighbor, current);
+                    queue.add(neighbor);
+
+                    printVisitHistory(buildPath(neighbor, parent));
+                }
+            }
+        }
+
+        return new Path(new MutableNode[0]);
+    }
+
+    // Helper Function to build path from parent
+    private List<MutableNode> buildPath(MutableNode node, Map<MutableNode, MutableNode> parent) {
+        List<MutableNode> path = new ArrayList<>();
+
+        while (node != null) {
+            path.add(node);
+            node = parent.get(node);
+        }
+
+        Collections.reverse(path);
+        return path;
+    }
+
+    // FEATURE: Random Walk Algorithm
+    private Path randomWalk(MutableNode src, MutableNode dst) {
+        Random rand = new Random();
+
+        Set<MutableNode> visited = new HashSet<>();
+        List<MutableNode> path = new ArrayList<>();
+
+        MutableNode current = src;
+        visited.add(current);
+        path.add(current);
+
+        printVisitHistory(path);
+
+        while (true) {
+            List<MutableNode> neighbors = getSortedNeighbors(current); // ADD HELPER FUNCTION
+
+            List<MutableNode> unvisited = new ArrayList<>();
+            for (MutableNode n : neighbors) {
+                if (!visited.contains(n)) {
+                    unvisited.add(n);
+                }
+            }
+
+            if (unvisited.isEmpty()) {
+                System.out.println("Reached dead end at node: " + current.name());
+                return new Path(path.toArray(new MutableNode[0]));
+            }
+
+            current = unvisited.get(rand.nextInt(unvisited.size()));
+            visited.add(current);
+            path.add(current);
+
+            printVisitHistory(path);
+
+            if (current.equals(dst)) {
+                System.out.println("Found target node: " + current.name());
+                return new Path(path.toArray(new MutableNode[0]));
+            }
+        }
+    }
 
 }
