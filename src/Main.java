@@ -10,13 +10,18 @@ public class Main {
 
             // Pick source and destination node
             var src = g.findNode("a");
-            var dst = g.findNode("e");
+            var dst = g.findNode("h");
 
+
+            /*
             System.out.println("\n===== BFS =====");
             g.GraphSearch(src, dst, Graph.Algorithm.BFS);
 
-            System.out.println("\n===== DFS =====");
+
+             System.out.println("\n===== DFS =====");
             g.GraphSearch(src, dst, Graph.Algorithm.DFS);
+            */
+
 
             System.out.println("\n===== RANDOM WALK =====");
             for (int i = 0; i < 9; i++) {

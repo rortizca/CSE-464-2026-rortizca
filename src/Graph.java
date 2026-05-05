@@ -22,7 +22,7 @@ public class Graph {
 
     private Algorithm algo = Algorithm.BFS;
 
-    public class Path {
+    public static class Path {
         MutableNode[] path;
 
         public Path(MutableNode[] nodes) {
@@ -46,7 +46,7 @@ public class Graph {
     }
 
     // Helper function to print visit history
-    private void printVisitHistory(List<MutableNode> path) {
+    public void printVisitHistory(List<MutableNode> path) {
         StringBuilder s = new StringBuilder();
 
         for (int i = 0; i < path.size(); i++) {
@@ -296,7 +296,7 @@ public class Graph {
     }
 
     // Helper Function to find sorted neighbors
-    private List<MutableNode> getSortedNeighbors(MutableNode node) {
+    public List<MutableNode> getSortedNeighbors(MutableNode node) {
         List<MutableNode> neighbors = new ArrayList<>();
 
         node.links().forEach(link -> {
@@ -385,7 +385,7 @@ public class Graph {
     }
 
     // Helper Function to build path from parent
-    private List<MutableNode> buildPath(MutableNode node, Map<MutableNode, MutableNode> parent) {
+    public List<MutableNode> buildPath(MutableNode node, Map<MutableNode, MutableNode> parent) {
         List<MutableNode> path = new ArrayList<>();
 
         while (node != null) {

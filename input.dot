@@ -8,4 +8,5 @@ digraph {
     e -> g;
     f -> h;
     g -> h;
+    a -> c;
 }
