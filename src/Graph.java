@@ -325,45 +325,5 @@ public class Graph {
         return path;
     }
 
-    // FEATURE: Random Walk Algorithm
-    private Path randomWalk(MutableNode src, MutableNode dst) {
-        Random rand = new Random();
-
-        Set<MutableNode> visited = new HashSet<>();
-        List<MutableNode> path = new ArrayList<>();
-
-        MutableNode current = src;
-        visited.add(current);
-        path.add(current);
-
-        printVisitHistory(path);
-
-        while (true) {
-            List<MutableNode> neighbors = getSortedNeighbors(current); // ADD HELPER FUNCTION
-
-            List<MutableNode> unvisited = new ArrayList<>();
-            for (MutableNode n : neighbors) {
-                if (!visited.contains(n)) {
-                    unvisited.add(n);
-                }
-            }
-
-            if (unvisited.isEmpty()) {
-                System.out.println("Reached dead end at node: " + current.name());
-                return new Path(path.toArray(new MutableNode[0]));
-            }
-
-            current = unvisited.get(rand.nextInt(unvisited.size()));
-            visited.add(current);
-            path.add(current);
-
-            printVisitHistory(path);
-
-            if (current.equals(dst)) {
-                System.out.println("Found target node: " + current.name());
-                return new Path(path.toArray(new MutableNode[0]));
-            }
-        }
-    }
 
 }
