@@ -277,22 +277,23 @@ public class Graph {
             throw new IllegalArgumentException("One or two nodes are null");
         }
 
-        if (src.equals(dst)) {
-            System.out.println("Visit Node History: " + src.name());
-            System.out.println("Found target node: " + src.name());
-            return new Path(new MutableNode[]{src});
-        }
+        SearchStrategy strategy;
 
         switch (algo) {
             case BFS:
-                return new BFS(this).search(src, dst);
+                strategy = new BFS(this);
+                break;
             case DFS:
-                return new DFS(this).search(src, dst);
+                strategy = new DFS(this);
+                break;
             case RANDOM:
-                return randomWalk(src, dst);
+                strategy = new RandomWalk(this);
+                break;
             default:
                 throw new IllegalArgumentException("Unknown algorithm");
         }
+
+        return strategy.search(src, dst);
     }
 
     // Helper Function to find sorted neighbors

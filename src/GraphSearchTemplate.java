@@ -1,7 +1,7 @@
 import guru.nidi.graphviz.model.MutableNode;
 import java.util.*;
 
-abstract class GraphSearchTemplate {
+public abstract class GraphSearchTemplate {
     protected Graph graph;
 
     protected Set<MutableNode> visited = new HashSet<>();
@@ -12,7 +12,11 @@ abstract class GraphSearchTemplate {
     }
 
     public Graph.Path search(MutableNode src, MutableNode dst) {
+        visited.clear();
+        parent.clear();
+
         init(src);
+        parent.put(src, null);
 
         graph.printVisitHistory(graph.buildPath(src, parent));
 
@@ -30,6 +34,7 @@ abstract class GraphSearchTemplate {
             processNeighbors(current, neighbors);
         }
 
+        System.out.println("No path found from " + src.name() + " to " + dst.name());
         return new Graph.Path(new MutableNode[0]);
     }
 
@@ -40,8 +45,7 @@ abstract class GraphSearchTemplate {
 
     protected void processNeighbors(MutableNode current, List<MutableNode> neighbors) {
         for (MutableNode neighbor : neighbors) {
-            if (!visited.contains(neighbor)) {
-                visited.add(neighbor);
+            if (visited.add(neighbor)) {
                 parent.put(neighbor, current);
                 addNode(neighbor);
 

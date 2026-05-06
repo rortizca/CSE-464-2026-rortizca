@@ -1,7 +1,7 @@
 import guru.nidi.graphviz.model.MutableNode;
 import java.util.*;
 
-class BFS extends GraphSearchTemplate{
+public class BFS extends GraphSearchTemplate implements SearchStrategy {
     private Queue<MutableNode> queue = new LinkedList<>();
 
     public BFS(Graph graph) {
@@ -10,8 +10,13 @@ class BFS extends GraphSearchTemplate{
 
     @Override
     protected void init(MutableNode src) {
+        queue.clear();
+        visited.clear();
+        parent.clear();
+
         queue.add(src);
         visited.add(src);
+        parent.put(src, null);
     }
 
     @Override
